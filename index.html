@@ -11,20 +11,15 @@
 <body>
     <h1 id="header">Palette Picker</h1>
 
-    <div class="palette-section">
-        <div class="swatch-group">
-            <label class="palette-label">Analogous Pattern</label>
-            <div class="swatches" id="analogous"></div>
-        </div>
+    <div id="palette-container">
+        <div class="pattern-switcher">
+            <button id="prev-pattern">←</button>
+            <label id="current-pattern-label">Analogous</label>
+            <button id="next-pattern">→</button>
     </div>
 
-    <div class="palette-section">
-        <div class="swatch-group">
-            <label class="palette-label">Complementary Pattern</label>
-            <div class="swatches" id="complementary"></div>
-        </div>
+        <div class="swatches" id="swatches"></div>
     </div>
-
 
     <script src="script.js"></script>
 </body>

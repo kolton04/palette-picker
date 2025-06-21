@@ -1,16 +1,58 @@
-const analogousSwatches = document.getElementById('analogous');
-const complementarySwatches = document.getElementById('complementary');
+const patterns = ['analogous', 'complementary', 'triadic', 'monochromatic']; 
+let currentIndex = 0;
+const swatchContainer = document.getElementById('swatches');
+const label = document.getElementById('current-pattern-label');
+const prevBtn = document.getElementById('prev-pattern');
+const nextBtn = document.getElementById('next-pattern');
+
 
 const swatchCounts = {
-        'analogous' : 2,
-        'complementary' : 2,
+        'analogous' : 5,
+        'complementary' : 5,
     };
 
 
-function addSwatch(color = '#3498db', paletteContainer){
-    const swatch = document.createElement('div');
-    const container = document.getElementById(paletteContainer.id);
+function generatePalette(pattern, count = swatchCounts[pattern]) {
+  swatchCounts[pattern] = count;
+  swatchContainer.innerHTML = '';
+
+  if (pattern === 'analogous') {
+    const hue = Math.floor(Math.random() * 360);
+    const sat = Math.random() * 0.3 + 0.4;
+
+    for (let i = 0; i < count; i++) {
+      const h = (hue + i * 25) % 360;
+      const l = Math.random() * 0.3 + 0.4;
+      const color = chroma.hsl(h, sat, l).hex();
+      addSwatch(color, swatchContainer, pattern);
+    }
     
+  }
+
+  else if (pattern === 'complementary') {
+    const hue = Math.floor(Math.random() * 360);
+    const comp = (hue + 180) % 360;
+    const sat = Math.random() * 0.3 + 0.5;
+    const light = Math.random() * 0.2 + 0.4;
+
+    const baseCount = Math.floor(count / 2);
+    const compCount = count - baseCount;
+
+    for (let i = 0; i < baseCount; i++) {
+      const color = chroma.hsl(hue, sat, light).hex();
+      addSwatch(color, swatchContainer, pattern);
+    }
+    for (let i = 0; i < compCount; i++) {
+      const color = chroma.hsl(comp, sat, light).hex();
+      addSwatch(color, swatchContainer, pattern);
+    }
+  }
+  fillEmptySwatches(swatchContainer, count, pattern)
+}
+
+
+function addSwatch(color = '#3498db', swatchContainer, pattern){
+    const swatch = document.createElement('div');
     swatch.classList.add('swatch');
     swatch.style.backgroundColor = color
     swatch.style.color = chroma(color).luminance() > 0.5 ? '#000' : '#fff';
@@ -22,18 +64,8 @@ function addSwatch(color = '#3498db', paletteContainer){
     removeBtn.style.backgroundColor = removeColor;
     removeBtn.classList.add('remove-button');
     removeBtn.addEventListener('click', (e) => {
-        const id = container.id;
-        if(swatchCounts[id] > 2){
-            swatch.remove();
-            swatchCounts[id] = Math.max(0, swatchCounts[id] - 1);
-
-            if (id === 'analogous') {
-                analogousPalette(swatchCounts[id]);
-            } 
-            else if (id === 'complementary') {
-                complementaryPalette(swatchCounts[id]);
-            }
-        }
+        swatchCounts[pattern]--;
+        generatePalette(pattern, swatchCounts[pattern]);
     });
 
     const hexLabel = document.createElement('span');
@@ -50,11 +82,11 @@ function addSwatch(color = '#3498db', paletteContainer){
 
     swatch.appendChild(removeBtn);
     swatch.appendChild(hexLabel);
-    paletteContainer.appendChild(swatch);
+    swatchContainer.appendChild(swatch);
 
 }
 
-function fillEmptySwatches(container, count) {
+function fillEmptySwatches(container, count, pattern) {
   const remaining = 8 - count;
 
   for (let i = 0; i < remaining; i++) {
@@ -62,16 +94,9 @@ function fillEmptySwatches(container, count) {
     emptySwatch.classList.add('swatch', 'emptySwatch');
     emptySwatch.textContent = '+';
     emptySwatch.addEventListener('click', () => {
-        const id = container.id;
-
-        if(swatchCounts[id] < 8){
-            swatchCounts[id]++;
-            if(id === 'analogous'){
-                analogousPalette(swatchCounts[id]);
-            }
-            else if (id === 'complementary') {
-                complementaryPalette(swatchCounts[id]);
-            }
+        if(swatchCounts[pattern] < 8){
+            swatchCounts[pattern]++;
+            generatePalette(pattern, swatchCounts[pattern]);
         }
         
     
@@ -82,51 +107,18 @@ function fillEmptySwatches(container, count) {
 
 
 
-
-
-function analogousPalette(count = swatchCounts['analogous']){
-    swatchCounts['analogous'] = count;
-    analogousSwatches.innerHTML = '';
-
-    const startingHue = Math.floor(Math.random() * 360);
-    const sat = Math.random() * 0.3 + 0.4; 
-
-    for(let i = 0; i < count; i++){
-        const nextHue = (startingHue + (i * 25)) % 360;
-        const color = chroma.hsl(nextHue, sat, (Math.random() * 0.3 + 0.4)).hex();
-        addSwatch(color, analogousSwatches);
-    }
-    fillEmptySwatches(analogousSwatches, count);
+function updatePattern(direction) {
+  currentIndex = (currentIndex + direction + patterns.length) % patterns.length;
+  const currentPattern = patterns[currentIndex];
+  label.textContent = capitalize(currentPattern) + ' Pattern';
+  generatePalette(currentPattern);
 }
 
-
-
-
-
-function complementaryPalette(count = swatchCounts['complementary']){
-    swatchCounts['complementary'] = count;
-    complementarySwatches.innerHTML = ''
-
-    const base = Math.floor(Math.random() * 360);
-    const comp = (base + 180) % 360;
-
-    const baseCount = Math.floor(count / 2);
-    const compCount = count - baseCount;
-
-    const sat = Math.random() * 0.3 + 0.5;
-    const light = Math.random() * 0.2 + 0.4;
-
-    for(let i = 0; i < baseCount; i++){
-        const color = chroma.hsl(base, sat, light).hex();
-        addSwatch(color, complementarySwatches);
-    }
-
-    for(let i = 0; i < compCount; i++){
-        const color = chroma.hsl(comp, sat, light).hex();
-        addSwatch(color, complementarySwatches);
-    }
-    fillEmptySwatches(complementarySwatches, count);
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-analogousPalette();
-complementaryPalette();
+prevBtn.addEventListener('click', () => updatePattern(-1));
+nextBtn.addEventListener('click', () => updatePattern(1));
+
+updatePattern(0);

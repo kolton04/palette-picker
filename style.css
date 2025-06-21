@@ -1,59 +1,69 @@
-#analogous,
-#complementary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns */
-  grid-template-rows: repeat(2, 1fr);    /* 2 rows */
-  gap: 10px;
-  width: fit-content; /* keeps grid tight */
-  margin-bottom: 1rem;
-  margin-left: 1rem;
+/* Layout container for the whole pattern section */
+#palette-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers label and swatches block */
+  gap: 1rem;
+  margin: 2rem auto;
 }
 
-.palette-section {
-  margin-bottom: 2rem;
+.pattern-switcher button#prev-pattern {
+  left: 0;
 }
 
-.swatch-group {
-  display: inline-block; 
-  text-align: center;    
+/* Position right button */
+.pattern-switcher button#next-pattern {
+  right: 0;
 }
 
-.palette-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
+#current-pattern-label {
+  flex: 1 1 auto;
+  text-align: center;
   font-weight: bold;
+  font-size: 1.2rem;
+  padding: 0 50px;   /* add side padding so label text doesn't get under buttons */
+  white-space: normal;  /* allow wrapping */
 }
+
+.pattern-switcher {
+  display: flex;
+  justify-content: center;       /* center all children */
+  align-items: center;
+  gap: 1rem;
+  margin: 0 auto 1rem auto;
+  position: relative;
+  width: 300px;                  /* fixed width container */
+}
+
+/* Buttons positioned absolutely to keep them fixed */
+.pattern-switcher button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  z-index: 10;
+}
+
+
 
 .swatches {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 250px); /* each swatch is 100px wide */
   gap: 10px;
-  justify-content: start; 
+
+  justify-content: center;  /* center the swatch contents */
+  margin: 0 auto;            /* center the grid block */
 }
 
-#header {
-    text-align: center;
-    text-decoration: solid;
-    font-size: x-large;
-    font-family: 'Poppins', sans-serif;
-    color: #000;
-    background-color:rgb(75, 73, 73);
-    padding-top: 15px;
-    padding-bottom: 15px;
-}
-
-#palette-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.button {
-  margin-top: 15px;
-}
-
-.swatch  {
+.swatch {
   position: relative;
   width: 250px;
   height: 250px;
@@ -63,20 +73,13 @@
   justify-content: center;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease;
   cursor: pointer;
   overflow: hidden;
 }
 
-
-.swatch:hover .remove-btn {
-  display: block;
-  
-}
-
 .remove-btn {
   position: absolute;
-  top: 2px;
+  top: 4px;
   right: 4px;
   border: none;
   background: none;
@@ -87,8 +90,12 @@
   padding: 0;
 }
 
+.swatch:hover .remove-btn {
+  display: block;
+}
+
 .emptySwatch {
-    background-color:rgb(75, 73, 73);
+  background-color: rgb(75, 73, 73);
   color: #000000;
   font-size: 2rem;
   display: flex;
@@ -103,18 +110,20 @@
   background-color: #494949;
 }
 
-html {
-  height: 100%;
+html, body {
+  background-color: rgb(39, 39, 39);
   margin: 0;
   padding: 0;
-  background-color: rgb(39, 39, 39);
+  min-height: 100vh;
+  color: white;
+  font-family: 'Lato', sans-serif;
 }
 
-body {
-  background-color: rgb(39, 39, 39);
-  margin: 0;         
-  padding: 0;        
-  min-height: 100vh; 
-  color: white;      
-  font-family: 'Lato', sans-serif;
+#header {
+  text-align: center;
+  font-size: x-large;
+  font-family: 'Poppins', sans-serif;
+  color: #000;
+  background-color: rgb(75, 73, 73);
+  padding: 15px 0;
 }
