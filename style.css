@@ -1,17 +1,44 @@
-#analogous-swatches,
-#complementary-swatches {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px; /* space between swatches */
+#analogous,
+#complementary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  grid-template-rows: repeat(2, 1fr);    /* 2 rows */
+  gap: 10px;
+  width: fit-content; /* keeps grid tight */
   margin-bottom: 1rem;
+  margin-left: 1rem;
+}
+
+.palette-section {
+  margin-bottom: 2rem;
+}
+
+.swatch-group {
+  display: inline-block; 
+  text-align: center;    
+}
+
+.palette-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  justify-content: start; 
 }
 
 #header {
     text-align: center;
     text-decoration: solid;
     font-size: x-large;
-    font-family: 'Segoe UI';
-    background-color:gray;
+    font-family: 'Poppins', sans-serif;
+    color: #000;
+    background-color:rgb(75, 73, 73);
     padding-top: 15px;
     padding-bottom: 15px;
 }
@@ -26,29 +53,68 @@
   margin-top: 15px;
 }
 
-.swatch {
-  width: 80px;
-  height: 80px;
+.swatch  {
+  position: relative;
+  width: 250px;
+  height: 250px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   transition: transform 0.2s ease;
+  cursor: pointer;
+  overflow: hidden;
 }
 
-.swatch:hover {
-  transform: scale(1.05);
-  cursor: pointer;
+
+.swatch:hover .remove-btn {
+  display: block;
+  
 }
 
 .remove-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  background: rgba(255,255,255,0.7);
+  top: 2px;
+  right: 4px;
   border: none;
-  border-radius: 3px;
+  background: none;
+  font-size: 1.2rem;
+  color: inherit;
   cursor: pointer;
+  display: none;
+  padding: 0;
+}
+
+.emptySwatch {
+    background-color:rgb(75, 73, 73);
+  color: #000000;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px dashed #ccc;
+  transition: background-color 0.2s ease;
+}
+
+.emptySwatch:hover {
+  background-color: #494949;
+}
+
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: rgb(39, 39, 39);
+}
+
+body {
+  background-color: rgb(39, 39, 39);
+  margin: 0;         
+  padding: 0;        
+  min-height: 100vh; 
+  color: white;      
+  font-family: 'Lato', sans-serif;
 }

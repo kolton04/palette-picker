@@ -2,16 +2,30 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>Color Palette Generator</title>
+    <title>Palette Picker</title>
     <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
     <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js"></script>
+    
 </head>
 <body>
-    <h1 id="header">Color Palette Generator</h1>
-    <div id="analogous-swatches"></div>
-    <button id="analogous-button" class="button">Analogous Pattern</button>
-    <div id="complementary-swatches"></div>
-    <button id="complementary-button" class="button">Complementary Pattern</button>
+    <h1 id="header">Palette Picker</h1>
+
+    <div class="palette-section">
+        <div class="swatch-group">
+            <label class="palette-label">Analogous Pattern</label>
+            <div class="swatches" id="analogous"></div>
+        </div>
+    </div>
+
+    <div class="palette-section">
+        <div class="swatch-group">
+            <label class="palette-label">Complementary Pattern</label>
+            <div class="swatches" id="complementary"></div>
+        </div>
+    </div>
+
+
     <script src="script.js"></script>
 </body>
 </html>
