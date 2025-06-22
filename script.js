@@ -5,11 +5,11 @@ const label = document.getElementById('current-pattern-label');
 const prevBtn = document.getElementById('prev-pattern');
 const nextBtn = document.getElementById('next-pattern');
 
-
-const swatchCounts = {
+const savedSwatchCount = JSON.parse(sessionStorage.getItem('swatchCounts'));
+const swatchCounts = savedSwatchCount || {
         'analogous' : 5,
         'complementary' : 5,
-    };
+};
 
 
 function generatePalette(pattern, count = swatchCounts[pattern]) {
@@ -17,41 +17,52 @@ function generatePalette(pattern, count = swatchCounts[pattern]) {
   swatchContainer.innerHTML = '';
 
   if (pattern === 'analogous') {
-    const hue = Math.floor(Math.random() * 360);
-    const sat = Math.random() * 0.3 + 0.4;
+    const firstHue = Math.floor(Math.random() * 360);
+    const s = Math.random() * 0.3 + 0.6;
+    const l = Math.random() * 0.2 + 0.5;
 
     for (let i = 0; i < count; i++) {
-      const h = (hue + i * 25) % 360;
-      const l = Math.random() * 0.3 + 0.4;
-      const color = chroma.hsl(h, sat, l).hex();
-      addSwatch(color, swatchContainer, pattern);
+      const nextHue = (firstHue + i * 25) % 360;
+      const color = chroma.hsl(nextHue, s, l).hex();
+      addSwatch(color, pattern);
     }
     
   }
 
   else if (pattern === 'complementary') {
-    const hue = Math.floor(Math.random() * 360);
-    const comp = (hue + 180) % 360;
+    const baseHue = Math.floor(Math.random() * 360);
+    const compHue = (baseHue + 180) % 360;
     const sat = Math.random() * 0.3 + 0.5;
     const light = Math.random() * 0.2 + 0.4;
+
+    const baseColors = [];
+    const compColors = [];
 
     const baseCount = Math.floor(count / 2);
     const compCount = count - baseCount;
 
     for (let i = 0; i < baseCount; i++) {
-      const color = chroma.hsl(hue, sat, light).hex();
-      addSwatch(color, swatchContainer, pattern);
+        const variation = chroma.hsl(baseHue, sat, light + (i * 0.05)).hex();
+        baseColors.push(variation);
     }
+
     for (let i = 0; i < compCount; i++) {
-      const color = chroma.hsl(comp, sat, light).hex();
-      addSwatch(color, swatchContainer, pattern);
+        const variation = chroma.hsl(compHue, sat, light + (i * 0.05)).hex();
+        compColors.push(variation);
     }
-  }
-  fillEmptySwatches(swatchContainer, count, pattern)
+
+    const colors = [...baseColors, ...compColors];
+    for (const color of colors) {
+        addSwatch(color, pattern);
+    }
+        
+    }
+  fillEmptySwatches(count, pattern);
+  saveSwatchCounts();
 }
 
 
-function addSwatch(color = '#3498db', swatchContainer, pattern){
+function addSwatch(color = '#3498db', pattern){
     const swatch = document.createElement('div');
     swatch.classList.add('swatch');
     swatch.style.backgroundColor = color
@@ -65,6 +76,7 @@ function addSwatch(color = '#3498db', swatchContainer, pattern){
     removeBtn.classList.add('remove-button');
     removeBtn.addEventListener('click', (e) => {
         swatchCounts[pattern]--;
+        saveSwatchCounts();
         generatePalette(pattern, swatchCounts[pattern]);
     });
 
@@ -86,7 +98,7 @@ function addSwatch(color = '#3498db', swatchContainer, pattern){
 
 }
 
-function fillEmptySwatches(container, count, pattern) {
+function fillEmptySwatches(count, pattern) {
   const remaining = 8 - count;
 
   for (let i = 0; i < remaining; i++) {
@@ -96,12 +108,11 @@ function fillEmptySwatches(container, count, pattern) {
     emptySwatch.addEventListener('click', () => {
         if(swatchCounts[pattern] < 8){
             swatchCounts[pattern]++;
+            saveSwatchCounts();
             generatePalette(pattern, swatchCounts[pattern]);
         }
-        
-    
     });
-    container.appendChild(emptySwatch);
+    swatchContainer.appendChild(emptySwatch);
   }
 }
 
@@ -110,12 +121,16 @@ function fillEmptySwatches(container, count, pattern) {
 function updatePattern(direction) {
   currentIndex = (currentIndex + direction + patterns.length) % patterns.length;
   const currentPattern = patterns[currentIndex];
-  label.textContent = capitalize(currentPattern) + ' Pattern';
+  label.textContent = formatPattern(currentPattern) + ' Pattern';
   generatePalette(currentPattern);
 }
 
-function capitalize(str) {
+function formatPattern(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function saveSwatchCounts(){
+  sessionStorage.setItem('swatchCounts', JSON.stringify(swatchCounts));
 }
 
 prevBtn.addEventListener('click', () => updatePattern(-1));
