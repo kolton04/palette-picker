@@ -79,6 +79,8 @@
 
 .remove-btn {
   position: absolute;
+  width: 20px;
+  height: 20px;
   top: 4px;
   right: 4px;
   border: none;
@@ -88,6 +90,44 @@
   cursor: pointer;
   display: none;
   padding: 0;
+}
+
+.lock-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 24px;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.lock-btn {
+  margin-bottom: 8px; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lock-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.lock-btn:hover svg {
+  opacity: 1;
 }
 
 .swatch:hover .remove-btn {
