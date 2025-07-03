@@ -47,28 +47,97 @@ let currentPattern = patterns[0];
 let currentSwatches = swatchCounts[currentPattern];
 let currentIndex = 0;
 
+let swatches = [];
 
+const lockedHues = swatches
+  .filter(s => s.isLocked)
+  .map(s => s.hsl[0]);
 
 function generatePalette() {
   currentSwatches = swatchCounts[currentPattern];
   swatchContainer.innerHTML = '';
 
+  swatches = swatches.filter(s => s.isLocked);
+  for (let swatch of swatches) {
+    addSwatch(swatch);
+  }
+  
   makePattern();
-  fillEmptySwatches();
+  
+  // Populates remaining swatches up to max amount (8)
+  const remaining = 8 - currentSwatches;
+
+  for (let i = 0; i < remaining; i++) {
+    const emptySwatch = document.createElement('div');
+    emptySwatch.classList.add('swatch', 'emptySwatch');
+    emptySwatch.textContent = '+';
+    emptySwatch.addEventListener('click', () => {
+        if(swatchCounts[currentPattern] < 8){
+            swatchCounts[currentPattern]++;
+            saveSwatchCounts();
+            generatePalette();
+        }
+    });
+    swatchContainer.appendChild(emptySwatch);
+  }
   saveSwatchCounts();
 }
 
 function analogous(){
-  const firstHue = Math.floor(Math.random() * 360);
-    const s = Math.random() * 0.3 + 0.6;
-    const l = Math.random() * 0.2 + 0.5;
+  const baseHue = Math.floor(Math.random() * 360);
+  const s = Math.random() * 0.3 + 0.6;
+  const l = Math.random() * 0.2 + 0.5;
 
+  if(lockedHues.length > 0){
     for (let i = 0; i < currentSwatches; i++) {
-      const nextHue = (firstHue + i * 15) % 360;
-      const color = chroma.hsl(nextHue, s, l).hex();
-      addSwatch(color, currentPattern);
+      if(!swatches[i].isLocked){
+        const leftLock = findLeftLock(i);
+        const rightLock = findRightLock(i);
+
+        let hue;
+        if(leftLock && rightLock){
+          hue = ((leftLock.hsl[0] + rightLock.hsl[0]) / 2) % 360;
+        }
+        else if(leftLock){
+          hue = (leftLock.hsl[0] + 15) % 360;
+        }
+        else if(rightLock){
+          hue = (leftLock.hsl[0] - 15) % 360;
+        }
+        else{
+          hue = Math.floor(Math.random() * 360);
+        }
+
+        const color = chroma.hsl(hue, s, l).hex();
+        swatches[i] = {
+          color,
+          hsl: [hue, s, l],
+          isLocked: false,
+          element: null,
+        };
+        addSwatch(swatches[i]);
+      } 
+      else {
+        addSwatch(swatches[i]);
+      }
     }
+  } 
+  else {
+    for (let i = 0; i < currentSwatches; i++) {
+      const hue = (baseHue + i * 15) % 360;
+      const color = chroma.hsl(hue, s, l).hex();
+
+      swatches[i] = {
+        color,
+        hsl: [hue, s, l],
+        isLocked: false,
+        element: null,
+      };
+      addSwatch(swatches[i]);
+    }
+  }
 }
+
 
 function complementary(){
   const firstHue = Math.floor(Math.random() * 360);
@@ -193,11 +262,14 @@ function makePattern(){
 
 
 
-function addSwatch(color = '#3498db'){
-    const swatch = document.createElement('div');
-    swatch.classList.add('swatch');
-    swatch.style.backgroundColor = color
-    swatch.style.color = chroma(color).luminance() > 0.5 ? '#000' : '#fff';
+function addSwatch(swatch){
+    const { color, hsl, isLocked, element } = swatch;
+    const swatchDiv = document.createElement('div');
+    swatchDiv.classList.add('swatch');
+    swatchDiv.style.backgroundColor = color
+    swatchDiv.style.color = chroma(color).luminance() > 0.5 ? '#000' : '#fff';
+    swatch.element = swatchDiv;
+
 
     const removeBtn = document.createElement('button');
     const removeColor = chroma(color).darken(1).hex();
@@ -206,10 +278,8 @@ function addSwatch(color = '#3498db'){
     removeBtn.classList.add('remove-btn');
 
     const lockBtn = document.createElement('button');
-    let isLocked = false;
     lockBtn.classList.add('lock-btn');
     lockBtn.innerHTML = unlockedSVG;
-    lockBtn.style.visibility = 'hidden';
 
     const hexLabel = document.createElement('span');
     const labelColor = chroma(color).darken(2).hex();
@@ -228,8 +298,6 @@ function addSwatch(color = '#3498db'){
       removeBtn.style.cursor = 'pointer';
     }
 
-   
-
     removeBtn.addEventListener('click', (e) => {
         swatchCounts[currentPattern]--;
         saveSwatchCounts();
@@ -237,13 +305,20 @@ function addSwatch(color = '#3498db'){
     });
 
     lockBtn.addEventListener('click', () => {
-        isLocked = !isLocked;
+        swatch.isLocked = !swatch.isLocked;
 
-        if (isLocked) {
+        if (swatch.isLocked) {
           lockBtn.innerHTML = lockedSVG;
+          removeBtn.disabled = true;
+          removeBtn.style.opacity = '0.5';
+          removeBtn.style.cursor = 'not-allowed';
+    
         } 
         else {
           lockBtn.innerHTML = unlockedSVG;
+          removeBtn.disabled = false;
+          removeBtn.style.opacity = '1';
+          removeBtn.style.cursor = 'pointer';
         }
   });
 
@@ -258,7 +333,8 @@ function addSwatch(color = '#3498db'){
     
     if (/^#[0-9A-F]{6}$/.test(input)) {
       currentHex = input;
-      swatch.style.backgroundColor = input;
+      swatch.color = input;
+      swatchDiv.style.backgroundColor = input;
       hexLabel.style.border = 'none';
     } 
     else {
@@ -277,46 +353,44 @@ function addSwatch(color = '#3498db'){
     }
     });
 
-    swatch.appendChild(lockBtn)
-    swatch.appendChild(removeBtn);
-    swatch.appendChild(hexLabel);
-    swatchContainer.appendChild(swatch);
+    swatchDiv.appendChild(lockBtn)
+    swatchDiv.appendChild(removeBtn);
+    swatchDiv.appendChild(hexLabel);
+    swatchContainer.appendChild(swatchDiv);
 }
 
-function fillEmptySwatches() {
-  const remaining = 8 - currentSwatches;
-
-  for (let i = 0; i < remaining; i++) {
-    const emptySwatch = document.createElement('div');
-    emptySwatch.classList.add('swatch', 'emptySwatch');
-    emptySwatch.textContent = '+';
-    emptySwatch.addEventListener('click', () => {
-        if(swatchCounts[currentPattern] < 8){
-            swatchCounts[currentPattern]++;
-            saveSwatchCounts();
-            generatePalette();
-        }
-    });
-    swatchContainer.appendChild(emptySwatch);
+function findLeftLock(index){
+  for(let k = index; k < currentSwatches; k--){
+    if(swatches[k].isLocked){
+      return swatches[k];
+    }
   }
+  return null;
 }
 
-function updatePattern(direction) {
-  currentIndex = (currentIndex + direction + patterns.length) % patterns.length;
-  currentPattern = patterns[currentIndex];
-
-  label.textContent = formatPattern(currentPattern) + ' Pattern';
-  sessionStorage.setItem('lastPattern', JSON.stringify(currentPattern));
-  generatePalette(currentPattern);
-}
-
-function formatPattern(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+function findRightLock(){
+  for (let k = index + 1; k < swatches.length; k++) {
+      if (swatches[k].isLocked) {
+        return swatches[k];
+      }
+    }
+    return null;
 }
 
 function saveSwatchCounts(){
   sessionStorage.setItem('swatchCounts', JSON.stringify(swatchCounts));
 }
+
+function updatePattern(direction) {
+  currentIndex = (currentIndex + direction + patterns.length) % patterns.length;
+  currentPattern = patterns[currentIndex];
+  const formattedPattern = currentPattern.charAt(0).toUpperCase() + currentPattern.slice(1);
+
+  label.textContent = formattedPattern + ' Pattern';
+  sessionStorage.setItem('lastPattern', JSON.stringify(currentPattern));
+  generatePalette();
+}
+
 
 prevBtn.addEventListener('click', () => updatePattern(-1));
 nextBtn.addEventListener('click', () => updatePattern(1));
