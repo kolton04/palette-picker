@@ -11,14 +11,14 @@
 <body>
     <h1 id="header">Palette Picker</h1>
 
-    <div id="palette-container">
-        <div class="pattern-switcher">
-            <button id="prev-pattern">←</button>
-            <label id="current-pattern-label">Analogous</label>
-            <button id="next-pattern">→</button>
+    <div class="palette-switcher">
+        <button type="button" class="button" id="left">&lt;-</button>
+        <p id="current-pattern"></p>
+        <button type="button" class="button" id="right">-&gt;</button>
     </div>
 
-        <div class="swatches" id="swatches"></div>
+
+    <div class="palette" id="palette">
     </div>
 
     <script src="script.js"></script>
