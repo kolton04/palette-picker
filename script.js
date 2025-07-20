@@ -1,9 +1,11 @@
 const palette = document.getElementById("palette");
 const patterns = ['analogous', 'complementary'];
-let swatchCount = 5 || palette.querySelectorAll('swatches');
+let userSwatches = localStorage.getItem('swatch-count');
+let swatchCount = userSwatches ?? 5;
 let patternIndex = 0;
 let currentPattern = document.getElementById("current-pattern");
 let swatches = [];
+let emptySwatches = document.querySelectorAll(".empty-swatch");
 currentPattern.innerHTML = patterns[patternIndex];
 
 const leftBtn = document.getElementById("left");
@@ -45,21 +47,36 @@ class Swatch {
         this.removeBtn = document.createElement("button");
         this.removeBtn.textContent = "-";
         this.removeBtn.addEventListener("click", () => {
-            this.div.remove();
+            if(swatches.length > 2){
+                this.div.remove();
+                for(let i = 0; i < swatches.length; i++){
+                    if(this.hue == swatches[i].hue){
+                        swatches.splice(i, 1);
+                    }
+                }
+                addEmptySwatches();
+                localStorage.setItem('swatch-count', swatches.length);
+
+            }
         });
         this.div.appendChild(this.removeBtn);
         palette.appendChild(this.div);
     }
 
-    addSwatch() {
-        for(let i = 0; i < swatches.length; i++){
-            console.log(swatches[i].hue);
-        }
-    }
+    
 }
 
-function emptySwatches(swatchNum) {
-    let remaining = 8 - swatchNum;
+function addEmptySwatches() {
+    // Clears previous empty swatches so it doesn't overfill
+    while(emptySwatches.length > 0){
+        for(let i = 0; i < emptySwatches.length; i++){
+            emptySwatches[i].div.remove();
+        }
+        emptySwatches = [];
+    }
+
+
+    let remaining = 8 - swatches.length;
     for(let i = 0; i < remaining; i++){
         let emptySwatch = {};
         emptySwatch.div = document.createElement("div");
@@ -67,46 +84,63 @@ function emptySwatches(swatchNum) {
         let addBtn = document.createElement("button");
         addBtn.innerHTML = "+";
         addBtn.addEventListener("click", function (){
-            swatchCount++;
-            generatePattern(currentPattern.innerHTML);
+            addSwatch(currentPattern.innerHTML);
+            addEmptySwatches();
+            localStorage.setItem('swatch-count', swatches.length);
+
         });
         emptySwatch.div.appendChild(addBtn);
         palette.appendChild(emptySwatch.div);
-        swatches[swatches.length] = emptySwatch;
+        emptySwatches[i] = emptySwatch;
     }
+}
+
+function addSwatch(pattern){
+    switch(pattern){
+        case 'analogous':
+            let hueStep = Math.floor(Math.random() * 15) + 10;
+            if(swatches.length < 9){
+                let h = (swatches[swatches.length - 1].hue + 15 )% 360;
+                let s = swatches[0].sat;
+                let l = swatches[0].light;
+                swatches[swatches.length] = new Swatch(h, s, l);
+            }
+            else if(swatches.length < 6){
+                console.log("test");
+            }
+            break;
+        case 'complementary':
+
+            break;
+    }
+    
 }
 
 
 
 
 function analogous(){
+    let h = Math.floor(Math.random() * 361);
     let s = Math.random() * (0.6 - 0.4) + 0.4;
     let l = Math.random() * (0.7 - 0.3) + 0.3;
-    if(swatches.length > 0){
-        const newHue = swatches[swatches.length].hue + 15;
-        swatches[swatches.length + 1] = new Swatch(newHue, s, l, false);
-    }
-    else {
-        
-        let h = Math.floor(Math.random() * 361);
-
-        for(let i = 0; i < swatchCount; i++){
-            const updateHue = (h + i * 15) % 360;
-            swatches[i] = new Swatch(updateHue, s, l, false);
-            console.log(swatches[i].hue);
-        }
+    for(let i = 0; i < swatchCount; i++){
+        const updateHue = (h + i * 15) % 360;
+        swatches[i] = new Swatch(updateHue, s, l);
     }
 }
 
 function generatePattern(pattern){
     palette.innerHTML = "";
     swatches = [];
+    emptySwatches = [];
     switch(pattern){
         case 'analogous':
             analogous();
         case 'complementary':
             //complementary();
     }
-    emptySwatches(swatchCount);
+    addEmptySwatches();
+    localStorage.setItem('swatch-count', swatches.length);
 }
+
 generatePattern(currentPattern.innerHTML);
