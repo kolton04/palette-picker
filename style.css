@@ -49,7 +49,11 @@
     height: 250px;
     width: 250px;
     border-radius: 25px;
-    justify-items: center;    
+     display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(117, 114, 114);
+
 }
 
 body {

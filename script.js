@@ -1,8 +1,9 @@
 const palette = document.getElementById("palette");
-let swatchCount = 5;
 const patterns = ['analogous', 'complementary'];
+let swatchCount = 5 || palette.querySelectorAll('swatches');
 let patternIndex = 0;
 let currentPattern = document.getElementById("current-pattern");
+let swatches = [];
 currentPattern.innerHTML = patterns[patternIndex];
 
 const leftBtn = document.getElementById("left");
@@ -27,8 +28,10 @@ rightBtn.addEventListener("click", function (){
     currentPattern.innerHTML = patterns[patternIndex];
 });
 
-class Swatch {
 
+
+
+class Swatch {
     constructor(hue, sat, light){
         this.swatch = {};
         this.hue = hue;
@@ -36,49 +39,74 @@ class Swatch {
         this.light = light;
         this.hex = chroma.hsl(hue, sat, light).hex();
         this.locked = false;
-        this.swatch.div = document.createElement("div");
-        this.swatch.div.classList.add("swatch");
-        this.swatch.div.style.backgroundColor = this.hex;
-        palette.appendChild(this.swatch.div);
+        this.div = document.createElement("div");
+        this.div.classList.add("swatch");
+        this.div.style.backgroundColor = this.hex;
+        this.removeBtn = document.createElement("button");
+        this.removeBtn.textContent = "-";
+        this.removeBtn.addEventListener("click", () => {
+            this.div.remove();
+        });
+        this.div.appendChild(this.removeBtn);
+        palette.appendChild(this.div);
     }
-    
+
+    addSwatch() {
+        for(let i = 0; i < swatches.length; i++){
+            console.log(swatches[i].hue);
+        }
+    }
 }
+
+function emptySwatches(swatchNum) {
+    let remaining = 8 - swatchNum;
+    for(let i = 0; i < remaining; i++){
+        let emptySwatch = {};
+        emptySwatch.div = document.createElement("div");
+        emptySwatch.div.classList.add("empty-swatch");
+        let addBtn = document.createElement("button");
+        addBtn.innerHTML = "+";
+        addBtn.addEventListener("click", function (){
+            swatchCount++;
+            generatePattern(currentPattern.innerHTML);
+        });
+        emptySwatch.div.appendChild(addBtn);
+        palette.appendChild(emptySwatch.div);
+        swatches[swatches.length] = emptySwatch;
+    }
+}
+
 
 
 
 function analogous(){
-    let h = Math.floor(Math.random() * 361);
     let s = Math.random() * (0.6 - 0.4) + 0.4;
     let l = Math.random() * (0.7 - 0.3) + 0.3;
-
-    for(let i = 0; i < swatchCount; i++){
-        const updateHue = (h + i * 15) % 360;
-        new Swatch(updateHue, s, l, false);
-        
+    if(swatches.length > 0){
+        const newHue = swatches[swatches.length].hue + 15;
+        swatches[swatches.length + 1] = new Swatch(newHue, s, l, false);
     }
-    swatchCount = palette.childElementCount;
+    else {
+        
+        let h = Math.floor(Math.random() * 361);
+
+        for(let i = 0; i < swatchCount; i++){
+            const updateHue = (h + i * 15) % 360;
+            swatches[i] = new Swatch(updateHue, s, l, false);
+            console.log(swatches[i].hue);
+        }
+    }
 }
 
 function generatePattern(pattern){
+    palette.innerHTML = "";
+    swatches = [];
     switch(pattern){
         case 'analogous':
             analogous();
         case 'complementary':
             //complementary();
     }
-    swatchCount = palette.childElementCount;
-
-    
+    emptySwatches(swatchCount);
 }
 generatePattern(currentPattern.innerHTML);
-emptySwatch = {};
-emptySwatch.div = document.createElement("div");
-emptySwatch.div.classList.add("empty-swatch");
-addBtn = document.createElement("button");
-addBtn.innerHTML = '+';
-addBtn.addEventListener("click", function() {
-
-});
-    for(let i = swatchCount; i < 8; i++){
-    emptySwatch.div.append(addBtn);
-    }
