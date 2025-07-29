@@ -111,16 +111,14 @@ function addEmptySwatches() {
 
 function analogous(){
     let h = Math.floor(Math.random() * 361);
-    let s = Math.random() * (0.6 - 0.4) + 0.4;
-    let l = Math.random() * (0.7 - 0.3) + 0.3;
+    let s = Math.random() * (0.75 - 0.2) + 0.2;
+    let l = Math.random() * (0.7 - 0.1) + 0.1;
     let hueStep;
     let updateHue;
     switch(swatchCount){
         case 2:
-            hueStep = 45;
-            break;
         case 3:
-            hueStep = 30;
+            hueStep = 35;
             break;
         case 4:
             hueStep = 23;
@@ -139,20 +137,31 @@ function analogous(){
             for(let i = 0; i < swatchCount; i++){
                 updateHue = (h + i * hueStep) % 360;
                 swatches.push(new Swatch(updateHue, s, l));
+                console.log(swatches.length);
             }
             break;
+        case 1:
         case 2:
         case 3:
+            updateHue = (h + hueStep) % 360;
+            swatches.push(new Swatch(updateHue, s, l));
+            break;
         case 4:
+            const randomIndex = Math.floor(Math.random() * swatches.length);
+            const randomSwatch = swatches[randomIndex];
+            let newS = Math.random() * (0.8 - 0.2) + 0.2;
+            let newL = Math.random() * (0.7 - 0.1) + 0.1;
+
+            swatches.push(new Swatch(randomSwatch.hue, newS, newL));
+            break;
+
+
         case 5:
         case 6:
         case 7:
         case 8:
             s = (swatches[swatches.length - 1].sat);
             l = (swatches[swatches.length - 1].light);
-
-            const randomIndex = Math.floor(Math.random() * swatches.length);
-            const randomSwatch = swatches[randomIndex];
 
             if(Math.floor(Math.random() * 2) === 0){
                 h = (swatches[1].hue) % 360;
