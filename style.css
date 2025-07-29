@@ -39,10 +39,23 @@
 }
 
 .swatch {
+    position: relative;
     height: 250px;
     width: 250px;
     border-radius: 25px;
     align-self: center;
+}
+
+#remove-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;    
+}
+
+#hex-label{
+    position:relative;
+    top: 100px;
+    left: 100px;
 }
 
 .empty-swatch {
