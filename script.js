@@ -2,10 +2,19 @@ const palette = document.getElementById("palette");
 let swatches = [];
 let emptySwatches = [];
 
-const patterns = ['analogous', 'complementary'];
+const patterns = ['analogous', 'complementary', 'monochromatic'];
 let patternIndex = 0;
 let currentPattern = document.getElementById("current-pattern");
-currentPattern.innerHTML = patterns[patternIndex];
+
+const savedPattern = localStorage.getItem("pattern");
+if(savedPattern && patterns.includes(savedPattern)){
+    currentPattern.innerHTML = savedPattern;
+    patternIndex = patterns.indexOf(savedPattern);
+}
+else {
+    currentPattern.innerHTML = patterns[0];
+    localStorage.setItem("pattern", patterns[0]);
+}
 
 const leftBtn = document.getElementById("left");
 leftBtn.addEventListener("click", function (){
@@ -15,7 +24,13 @@ leftBtn.addEventListener("click", function (){
     else{
         patternIndex -= 1;
     }
+    palette.innerHTML = "";
+    swatches = [];
+    emptySwatches = [];
     currentPattern.innerHTML = patterns[patternIndex];
+    localStorage.setItem("pattern", currentPattern.innerHTML);
+    generatePattern(currentPattern.innerHTML);
+
 });
 
 const rightBtn = document.getElementById("right");
@@ -26,10 +41,18 @@ rightBtn.addEventListener("click", function (){
     else{
         patternIndex += 1;
     }
+    palette.innerHTML = "";
+    swatches = [];
+    emptySwatches = [];
     currentPattern.innerHTML = patterns[patternIndex];
+    localStorage.setItem("pattern", currentPattern.innerHTML);
+    generatePattern(currentPattern.innerHTML);
 });
 
-
+const regenPatternBtn = document.getElementById("current-pattern");
+regenPatternBtn.addEventListener("click", () => {
+    location.reload();
+})
 
 
 class Swatch {
@@ -45,6 +68,7 @@ class Swatch {
         this.removeBtn = document.createElement("button");
         this.removeBtn.textContent = "-";
         this.removeBtn.addEventListener("click", () => {
+        
             this.div.remove();
             for(let i = 0; i < swatches.length; i++){
                 if(swatches[i].hex == this.hex){
@@ -52,7 +76,6 @@ class Swatch {
                 }
             }
             addEmptySwatches();
-
             
         });
         this.hexLabel = document.createElement("p");
@@ -98,12 +121,17 @@ function addEmptySwatches() {
 }
 
 function generatePattern(pattern){
+    
     switch(pattern){
         case 'analogous':
             analogous();
             break;
         case 'complementary':
-            //complementary();
+            complementary();
+            break;
+        case 'monochromatic':
+            monochromatic();
+            break;
     }
     addEmptySwatches();
 }
