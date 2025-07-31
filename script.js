@@ -1,14 +1,10 @@
 const palette = document.getElementById("palette");
-const patterns = ['analogous', 'complementary'];
-let userSwatches = parseInt(localStorage.getItem('swatch-count'));
-if (isNaN(userSwatches) || userSwatches < 2){
-    userSwatches = 2;
-}
-let swatchCount = userSwatches;
-let patternIndex = 0;
-let currentPattern = document.getElementById("current-pattern");
 let swatches = [];
 let emptySwatches = [];
+
+const patterns = ['analogous', 'complementary'];
+let patternIndex = 0;
+let currentPattern = document.getElementById("current-pattern");
 currentPattern.innerHTML = patterns[patternIndex];
 
 const leftBtn = document.getElementById("left");
@@ -38,7 +34,6 @@ rightBtn.addEventListener("click", function (){
 
 class Swatch {
     constructor(hue, sat, light){
-        this.swatch = {};
         this.hue = hue;
         this.sat = sat;
         this.light = light;
@@ -50,17 +45,15 @@ class Swatch {
         this.removeBtn = document.createElement("button");
         this.removeBtn.textContent = "-";
         this.removeBtn.addEventListener("click", () => {
-            if(swatches.length > 2){
-                this.div.remove();
-                for(let i = 0; i < swatches.length; i++){
-                    if(this.hue == swatches[i].hue){
-                        swatches.splice(i, 1);
-                    }
+            this.div.remove();
+            for(let i = 0; i < swatches.length; i++){
+                if(swatches[i].hex == this.hex){
+                    swatches.splice(i, 1);
                 }
-                addEmptySwatches();
-                localStorage.setItem('swatch-count', swatches.length);
-
             }
+            addEmptySwatches();
+
+            
         });
         this.hexLabel = document.createElement("p");
         let upperHex = this.hex.toUpperCase();
@@ -86,7 +79,7 @@ function addEmptySwatches() {
     }
 
     
-    let remaining = 8 - swatches.length;
+    let remaining = 16 - swatches.length;
     for(let i = 0; i < remaining; i++){
         let emptySwatch = {};
         emptySwatch.div = document.createElement("div");
@@ -94,135 +87,14 @@ function addEmptySwatches() {
         let addBtn = document.createElement("button");
         addBtn.innerHTML = "+";
         addBtn.addEventListener("click", function (){
-            swatchCount++;
             generatePattern(currentPattern.innerHTML);
-            localStorage.setItem('swatch-count', swatches.length);
-
 
         });
+        addBtn.id = "add-btn";
         emptySwatch.div.appendChild(addBtn);
         palette.appendChild(emptySwatch.div);
         emptySwatches = document.querySelectorAll(".empty-swatch");
     }
-}
-
-
-
-
-function analogous(){
-    let h = Math.floor(Math.random() * 361);
-<<<<<<< HEAD
-    let s = Math.random() * (0.75 - 0.2) + 0.2;
-    let l = Math.random() * (0.7 - 0.1) + 0.1;
-    let hueStep;
-    let updateHue;
-    switch(swatchCount){
-        case 2:
-        case 3:
-            hueStep = 35;
-            break;
-        case 4:
-            hueStep = 23;
-            break;
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-            hueStep = 15;
-            break;
-    }
-    
-
-    switch(swatches.length){
-        case 0:
-            for(let i = 0; i < swatchCount; i++){
-                updateHue = (h + i * hueStep) % 360;
-                swatches.push(new Swatch(updateHue, s, l));
-                console.log(swatches.length);
-            }
-            break;
-        case 1:
-        case 2:
-        case 3:
-            updateHue = (h + hueStep) % 360;
-            swatches.push(new Swatch(updateHue, s, l));
-            break;
-        case 4:
-            const randomIndex = Math.floor(Math.random() * swatches.length);
-            const randomSwatch = swatches[randomIndex];
-            let newS = Math.random() * (0.8 - 0.2) + 0.2;
-            let newL = Math.random() * (0.7 - 0.1) + 0.1;
-
-            swatches.push(new Swatch(randomSwatch.hue, newS, newL));
-            break;
-
-
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-            s = (swatches[swatches.length - 1].sat);
-            l = (swatches[swatches.length - 1].light);
-
-            if(Math.floor(Math.random() * 2) === 0){
-                h = (swatches[1].hue) % 360;
-                hueStep = (Math.floor(Math.random() * hueStep + 10) + (-hueStep));
-
-            }
-            else if(Math.floor(Math.random() * 2) === 1){
-                h = (swatches[swatches.length - 1].hue) % 360;
-                hueStep = (Math.floor(Math.random() * hueStep + 10) + hueStep);
-
-
-            }
-        
-            updateHue = (h + hueStep) % 360;
-            swatches.push(new Swatch(updateHue, s, l));
-            break;
-            
-=======
-    let s = Math.random() * (0.6 - 0.4) + 0.4;
-    let l = Math.random() * (0.7 - 0.3) + 0.3;
-    let hueStep;
-    let updateHue;
-    if(swatchCount <= 6){
-        hueStep = 15;
->>>>>>> 3838a11807173108589dd6181d96f826444b688a
-    }
-    else if(swatchCount <= 4){
-        hueStep = 20;
-    }
-    else{
-        hueStep = 10;
-    }
-
-    if(swatches.length === 0){
-        for(let i = 0; i < swatchCount; i++){
-            updateHue = (h + i * hueStep) % 360;
-            swatches.push(new Swatch(updateHue, s, l));
-        }
-        
-    }
-    else if(swatches.length < 8){
-        s = (swatches[swatches.length - 1].sat);
-        l = (swatches[swatches.length - 1].light);
-
-        if(Math.floor(Math.random() * 2) === 0){
-            h = (swatches[1].hue) % 360;
-            hueStep = (Math.floor(Math.random() * hueStep + 10) + (-hueStep));
-
-        }
-        else if(Math.floor(Math.random() * 2) === 1){
-            h = (swatches[swatches.length - 1].hue) % 360;
-            hueStep = (Math.floor(Math.random() * hueStep + 10) + hueStep);
-
-
-        }
-    
-        const updateHue = (h + hueStep) % 360;
-        swatches.push(new Swatch(updateHue, s, l));
-    }
-    
 }
 
 function generatePattern(pattern){
@@ -234,7 +106,7 @@ function generatePattern(pattern){
             //complementary();
     }
     addEmptySwatches();
-    localStorage.setItem('swatch-count', swatches.length);
 }
 
 generatePattern(currentPattern.innerHTML);
+
