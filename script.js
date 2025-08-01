@@ -2,7 +2,7 @@ const palette = document.getElementById("palette");
 let swatches = [];
 let emptySwatches = [];
 
-const patterns = ['analogous', 'complementary', 'monochromatic'];
+const patterns = ['analogous', 'complementary', 'monochromatic', 'split-complementary'];
 let patternIndex = 0;
 let currentPattern = document.getElementById("current-pattern");
 
@@ -102,7 +102,7 @@ function addEmptySwatches() {
     }
 
     
-    let remaining = 16 - swatches.length;
+    let remaining = 12 - swatches.length;
     for(let i = 0; i < remaining; i++){
         let emptySwatch = {};
         emptySwatch.div = document.createElement("div");
@@ -111,6 +111,7 @@ function addEmptySwatches() {
         addBtn.innerHTML = "+";
         addBtn.addEventListener("click", function (){
             generatePattern(currentPattern.innerHTML);
+            
 
         });
         addBtn.id = "add-btn";
@@ -118,6 +119,34 @@ function addEmptySwatches() {
         palette.appendChild(emptySwatch.div);
         emptySwatches = document.querySelectorAll(".empty-swatch");
     }
+}
+
+function hueScale(){
+    let hueScale = document.getElementById("hue-scale");
+
+    for(let i = 0; i < 361; i++){
+        const color = chroma.hsl(i, 1, 0.5);
+        const colorDiv = document.createElement('div');
+        colorDiv.style.backgroundColor = color.hex();
+        colorDiv.style.width = '1px';
+        colorDiv.style.height = '25px';
+        hueScale.appendChild(colorDiv);
+        for(let k = 0; k < swatches.length; k++){
+            if(swatches[k].hue === i){
+                console.log("hi")
+
+                const hueMarker = document.createElement('div');
+                hueMarker.style.backgroundColor = 'black';
+                hueMarker.style.width = '3px';
+                hueMarker.style.height = '50px';
+                hueScale.appendChild(hueMarker);
+            }
+        }
+    }
+    
+        
+
+    
 }
 
 function generatePattern(pattern){
@@ -132,9 +161,13 @@ function generatePattern(pattern){
         case 'monochromatic':
             monochromatic();
             break;
+        case 'split-complementary':
+            splitComp();
+            break;
     }
     addEmptySwatches();
+    
 }
 
 generatePattern(currentPattern.innerHTML);
-
+hueScale();

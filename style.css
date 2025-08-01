@@ -38,7 +38,7 @@
     column-gap: 30px;
     row-gap: 30px;
     width: 1090px;
-
+    height: 810px;
 }
 
 .swatch {
@@ -86,6 +86,16 @@
 
 
 }
+
+#hue-scale {
+    padding-top: 25px;
+    display: flex;
+    justify-content: center; 
+
+
+}
+
+
 
 body {
     background-color: rgb(77, 75, 75);

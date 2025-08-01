@@ -11,7 +11,6 @@ function analogous() {
             for(let i = 0; i < 3; i++){
                 updateHue = (h + i * 35) % 360;
                 swatches.push(new Swatch(updateHue, s, l));
-                console.log(swatches[i].hue)
             }
             break;
         case 1:
@@ -42,10 +41,6 @@ function analogous() {
         case 10:
         case 11:
         case 12:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
             const randomIndex = Math.floor(Math.random() * swatches.length);
             const randomSwatch = swatches[randomIndex];
             let randomHue;
@@ -112,5 +107,68 @@ function monochromatic() {
     }
     else{
         swatches.push(new Swatch(swatches[0].hue, s, l));
+    }
+}
+
+
+
+
+function splitComp() {
+    let s = Math.random() * (0.75 - 0.2) + 0.2;
+    let l = Math.random() * (0.7 - 0.2) + 0.2;
+
+    switch(swatches.length){
+        case 0:
+            let h = Math.floor(Math.random() * 360);
+            for(let i = 0; i < 3; i++){
+                updateHue = (h + (i * 160)); 
+                if(i === 2){
+                    updateHue = (h + 200) % 360;
+                }
+                else{
+                    updateHue = (h + (i * 160)) % 360;
+                }
+                swatches.push(new Swatch(updateHue, s, l));
+            }
+            break;
+        case 1:
+            swatches.push(new Swatch(((swatches[0].hue + 160) % 360), s, l));
+            break;
+
+        case 2:
+            swatches.push(new Swatch(((swatches[0].hue + 200) % 360), s, l));
+            console.log(swatches)
+            break;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+            const randomIndex = Math.floor(Math.random() * swatches.length);
+            const randomSwatch = swatches[randomIndex];
+            let randomHue;
+
+            minHue = swatches[0].hue;
+            maxHue = swatches[2].hue;
+
+            //wraps numbers around 360 if minHue is close to 360
+            if(minHue <= maxHue){
+                randomHue = Math.random() * (maxHue - minHue) + minHue;
+            }
+            else{
+                let randomHueStep = Math.floor(Math.random() * 70)
+                randomHue = (minHue + randomHueStep) % 360;
+            }
+
+            swatches.push(new Swatch(randomHue, 
+                Math.random() * ((randomSwatch.sat + 0.1) - (randomSwatch.sat - 0.1)) + (randomSwatch.sat - 0.1),
+                Math.random() * ((randomSwatch.light + 0.1) - (randomSwatch.light - 0.1)) + (randomSwatch.light - 0.1)
+            ))
+            break;    
     }
 }
