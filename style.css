@@ -88,11 +88,10 @@
 }
 
 #hue-scale {
-    padding-top: 25px;
-    display: flex;
-    justify-content: center; 
-
-
+    position: absolute;
+    left: 5%;
+    top: 96%;
+    height: 25%;
 }
 
 

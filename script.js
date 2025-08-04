@@ -6,6 +6,7 @@ const patterns = ['analogous', 'complementary', 'monochromatic', 'split-compleme
 let patternIndex = 0;
 let currentPattern = document.getElementById("current-pattern");
 
+
 const savedPattern = localStorage.getItem("pattern");
 if(savedPattern && patterns.includes(savedPattern)){
     currentPattern.innerHTML = savedPattern;
@@ -76,6 +77,8 @@ class Swatch {
                 }
             }
             addEmptySwatches();
+            hueScale();
+            addScaleMarker();
             
         });
         this.hexLabel = document.createElement("p");
@@ -111,6 +114,8 @@ function addEmptySwatches() {
         addBtn.innerHTML = "+";
         addBtn.addEventListener("click", function (){
             generatePattern(currentPattern.innerHTML);
+            addScaleMarker();
+
             
 
         });
@@ -123,31 +128,24 @@ function addEmptySwatches() {
 
 function hueScale(){
     let hueScale = document.getElementById("hue-scale");
+    let ctx = hueScale.getContext("2d");
 
-    for(let i = 0; i < 361; i++){
-        const color = chroma.hsl(i, 1, 0.5);
-        const colorDiv = document.createElement('div');
-        colorDiv.style.backgroundColor = color.hex();
-        colorDiv.style.width = '1px';
-        colorDiv.style.height = '25px';
-        hueScale.appendChild(colorDiv);
-        for(let k = 0; k < swatches.length; k++){
-            if(swatches[k].hue === i){
-                console.log("hi")
-
-                const hueMarker = document.createElement('div');
-                hueMarker.style.backgroundColor = 'black';
-                hueMarker.style.width = '3px';
-                hueMarker.style.height = '50px';
-                hueScale.appendChild(hueMarker);
-            }
-        }
+    for(let i = 0; i < hueScale.width; i += 0.5){
+        ctx.fillStyle = chroma.hsl(i, 1, 0.5);
+        ctx.fillRect(i, 0, 1, 10);
     }
-    
-        
-
-    
 }
+
+function addScaleMarker(){
+    let hueScale = document.getElementById("hue-scale");
+    let ctx = hueScale.getContext("2d");
+    ctx.fillStyle = 'black';
+    for(let i = 0; i < swatches.length; i++){
+        ctx.fillRect(swatches[i].hue, -10, 5, 20);
+    }
+
+}
+
 
 function generatePattern(pattern){
     
@@ -166,8 +164,8 @@ function generatePattern(pattern){
             break;
     }
     addEmptySwatches();
-    
+    hueScale();
+    addScaleMarker();
 }
 
 generatePattern(currentPattern.innerHTML);
-hueScale();

@@ -78,8 +78,10 @@ function complementary() {
         let h = Math.floor(Math.random() * 360);
         for(let i = 0; i < 2; i++){
             updateHue = (h + i * 180) % 360;
-            swatches.push(new Swatch(updateHue, s, l));
         }
+    }
+    else if(swatches.length === 1){
+        updateHue = (swatches[0].hue + 180) % 360;
     }
     else{
         if(Math.random() < 0.5){
@@ -88,8 +90,9 @@ function complementary() {
         else{
             updateHue = swatches[1].hue;
         }
-        swatches.push(new Swatch(updateHue, s, l));
     }
+    swatches.push(new Swatch(updateHue, s, l));
+
 }
 
 
@@ -116,27 +119,70 @@ function monochromatic() {
 function splitComp() {
     let s = Math.random() * (0.75 - 0.2) + 0.2;
     let l = Math.random() * (0.7 - 0.2) + 0.2;
+    //Step for going 20 degrees + or - initial hues complement so initial swatches are 
+    // 1 [initial hue]
+    // 2 [intial hue + (180 + offset)] 
+    // 3 [intial hue + (180 - offset)]
+    const hueOffset = 20;
 
     switch(swatches.length){
         case 0:
             let h = Math.floor(Math.random() * 360);
-            for(let i = 0; i < 3; i++){
-                updateHue = (h + (i * 160)); 
-                if(i === 2){
-                    updateHue = (h + 200) % 360;
+            for(let i = 0; i < 3; i++){                
+                if(i < 2){
+                    updateHue = (h + (i * (180 + hueOffset))) % 360;
                 }
                 else{
-                    updateHue = (h + (i * 160)) % 360;
+                    updateHue = (h + (180 - hueOffset)) % 360;
                 }
                 swatches.push(new Swatch(updateHue, s, l));
             }
             break;
+        // 50/50 to make next hue [180 + offset] OR [180 - offset].
         case 1:
-            swatches.push(new Swatch(((swatches[0].hue + 160) % 360), s, l));
-            break;
 
+            if(Math.random() < 0.5){
+                updateHue = ((swatches[0].hue + (180 + hueOffset)) % 360);
+            }
+            else{
+                updateHue = ((swatches[0].hue + (180 - hueOffset)) % 360);
+            }
+            swatches.push(new Swatch(updateHue, s, l));
+            console.log(swatches)
+            break;
+        // 
         case 2:
-            swatches.push(new Swatch(((swatches[0].hue + 200) % 360), s, l));
+            const firstHue = swatches[0].hue;
+            const secondHue = swatches[1].hue;
+            let hueDiff;
+
+            if(firstHue > secondHue){
+                hueDiff = firstHue - secondHue;
+            }
+            else if (secondHue > firstHue){
+                hueDiff = secondHue - firstHue;
+            }
+            console.log(hueDiff);
+
+            if(hueDiff === 160){
+                if(Math.random() < 0.5){
+                    updateHue = ((swatches[1].hue + (180 + hueOffset)) % 360);
+                }
+                else{
+                    updateHue = ((swatches[1].hue + (180 - hueOffset)) % 360);
+                }
+            }
+            else if (hueDiff === 200){
+                if(Math.random() < 0.5){
+                    updateHue = ((swatches[1].hue + (180 - hueOffset)) % 360);
+                }
+                else{
+                    updateHue = ((swatches[1].hue + (180 + hueOffset)) % 360);
+                }
+            }
+
+
+            swatches.push(new Swatch(updateHue, s, l));
             console.log(swatches)
             break;
         case 3:
