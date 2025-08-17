@@ -72,10 +72,7 @@ function analogous() {
             const randomIndex = Math.floor(Math.random() * swatches.length);
             const randomSwatch = swatches[randomIndex];
 
-            let hues = [];
-            for(let i = 0; i < swatches.length; i++){
-                hues.push(swatches[i].hue);
-            }
+            let hues = swatches.map(sw => sw.hue);
 
             const {startHue, endHue, arcLength} = findHueArc(hues);
             
@@ -107,31 +104,39 @@ function complementary() {
     let s = Math.random() * (0.65 - 0.2) + 0.2;
     let l = Math.random() * (0.6 - 0.2) + 0.2;
 
-    let hues = [];
-    for(let i = 0; i < swatches.length; i++){
-        hues.push(swatches[i].hue);
-    }
+    let hues = swatches.map(sw => sw.hue);
+    let baseHue = hues[0];
+    let complement = (baseHue + 180) % 360;
 
     if(swatches.length === 0){
         let h = Math.floor(Math.random() * 360);
-        for(let i = 0; i < defaultColorAmt; i++){
-            updateHue = (h + i * 180) % 360;
-        }
+        swatches.push(new Swatch(h, s, l));
+        swatches.push(new Swatch((h + 180) % 360, s, l));
     }
     else if(swatches.length === 1){
-        updateHue = (swatches[0].hue + 180) % 360;
+        swatches.push(new Swatch(complement, s, l));
     }
     else{
-        const randomSwatchHue = swatches[Math.floor(Math.random() * swatches.length)].hue
-        updateHue = randomSwatchHue;
+        let hasBase = hues.includes(baseHue)
+        let hasComplement = hues.includes(complement)
 
-        if(hues.includes(updateHue)){
-            updateHue += 180 % 360;
+        if(!hasComplement) {
+            swatches.push(new Swatch(complement, s, l));
+        } 
+        else if(!hasBase) {
+            swatches.push(new Swatch(baseHue, s, l));
         }
-        
-    }
-    swatches.push(new Swatch(updateHue, s, l));
+        else{
+            if(Math.random() < 0.5){
+                updateHue = (hues[0] + 180) % 360;
+            }
+            else{
+                updateHue = hues[0];
 
+            }
+            swatches.push(new Swatch(updateHue, s, l));
+        }
+    }
 }
 
 
