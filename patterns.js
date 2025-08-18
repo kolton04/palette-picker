@@ -2,77 +2,71 @@
 
 function analogous() {
     function findHueArc(hues) {
-    let sorted = [...hues].sort((a, b) => a - b);
+        let sorted = [...hues].sort((a, b) => a - b);
+        let largestGap = -1;
+        let gapIndex = 0;
 
-    let largestGap = -1;
-    let gapIndex = 0;
-
-    // check gaps between hues, finds the largest and saves the index
-    for (let i = 0; i < sorted.length; i++) {
-        let next = sorted[(i + 1) % sorted.length];
-        let diff = (next - sorted[i] + 360) % 360;
-        if (diff > largestGap) {
-            largestGap = diff;
-            gapIndex = i;
+        // Check gaps between hues. Finds the largest and saves the index
+        for (let i = 0; i < sorted.length; i++) {
+            let next = sorted[(i + 1) % sorted.length];
+            let diff = (next - sorted[i] + 360) % 360;
+            if (diff > largestGap) {
+                largestGap = diff;
+                gapIndex = i;
+            }
         }
+        // The range of hues is the opposite of the largest gap in the hues around a circle
+        // So hue range is from the end of the largest gap to its start
+        let startHue = sorted[(gapIndex + 1) % sorted.length];
+        let endHue = sorted[gapIndex];
+        // When hue wraps around circle this ensures no negatives
+        if (endHue < startHue) {
+            endHue += 360;
+        }
+        return { startHue, endHue, arcLength: endHue - startHue };
     }
 
-    // the range of hues is opposite the largest gap. 
-    // range starts where largest gap ends and range ends where largest gap starts
-    let startHue = sorted[(gapIndex + 1) % sorted.length];
-    let endHue = sorted[gapIndex];
-
-    // ensures no negatives when calculating arc length
-    if (endHue < startHue) {
-        endHue += 360;
+    function vary(value, range = 0.1) {
+        // adds a random variation up to ±range, clamped between 0 and 1
+        let v = value + (Math.random() * 2 - 1) * range;
+        return Math.min(1, Math.max(0, v));
     }
 
-    return { startHue, endHue, arcLength: endHue - startHue };
-}
     let updateHue;
-    
+    let l;
+    let s;
     switch(swatches.length){
         case 0:
-            let h = Math.floor(Math.random() * 360);
-            let s = Math.random() * (0.65 - 0.2) + 0.2;
-            let l = Math.random() * (0.6 - 0.2) + 0.2;
-            for(let i = 0; i < 3; i++){
-                updateHue = (h + i * 35) % 360;
-                swatches.push(new Swatch(updateHue, s, l));
+            const defaultSwatchAmt = 3;
+            let h = Math.floor(Math.random() * 360); // Random hue from 0-360
+            s = Math.random() * (0.65 - 0.2) + 0.2; // Random saturation from 0.2-0.65
+            l = Math.random() * (0.6 - 0.2) + 0.2; // Random light from 0.2-0.6
+            for(let i = 0; i < defaultSwatchAmt; i++){
+                // Adds base hue + index * 35 degrees
+                swatches.push(new Swatch(((h + i * 35) % 360), s, l));
             }
             break;
         case 1:
         case 2:
+            // Changes the default saturation and light values by 8% with helper function
+            s = vary(swatches[0].sat, 0.08);
+            l = vary(swatches[0].light, 0.08);
             minHue = swatches[0].hue;
             maxHue = swatches[swatches.length - 1].hue;
 
             if(Math.random() < 0.5){
                 minHue -= 35;
-                swatches.push(new Swatch(minHue,
-                    swatches[swatches.length - 1].sat,
-                    swatches[swatches.length - 1].light));
+                swatches.push(new Swatch(minHue, s, l));
             }
             else{
                 maxHue += 35;
-                swatches.push(new Swatch(maxHue,
-                    swatches[swatches.length - 1].sat,
-                    swatches[swatches.length - 1].light));
+                swatches.push(new Swatch(maxHue, s, l));
             }
             break;
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-            const randomIndex = Math.floor(Math.random() * swatches.length);
-            const randomSwatch = swatches[randomIndex];
-
+        default: {
             let hues = swatches.map(sw => sw.hue);
+            s = vary(swatches[0].sat, 0.08);
+            l = vary(swatches[0].light, 0.08);
 
             const {startHue, endHue, arcLength} = findHueArc(hues);
             
@@ -86,11 +80,10 @@ function analogous() {
                 updateHue = Math.round((Math.random() * (endHue - startHue) + startHue) % 360);
             }
             
-            swatches.push(new Swatch(updateHue, 
-                Math.random() * ((randomSwatch.sat + 0.1) - (randomSwatch.sat - 0.1)) + (randomSwatch.sat - 0.1),
-                Math.random() * ((randomSwatch.light + 0.1) - (randomSwatch.light - 0.1)) + (randomSwatch.light - 0.1)
-            ))
-            break;    
+            swatches.push(new Swatch(updateHue, s, l));
+            console.log(swatches)
+            break;
+        }    
     }
 }
 
@@ -99,8 +92,6 @@ function analogous() {
 
 
 function complementary() {
-    const defaultColorAmt = 2;
-    let updateHue;
     let s = Math.random() * (0.65 - 0.2) + 0.2;
     let l = Math.random() * (0.6 - 0.2) + 0.2;
 
@@ -128,13 +119,11 @@ function complementary() {
         }
         else{
             if(Math.random() < 0.5){
-                updateHue = (hues[0] + 180) % 360;
+                swatches.push(new Swatch(baseHue, s, l));
             }
             else{
-                updateHue = hues[0];
-
+                swatches.push(new Swatch(complement, s, l));
             }
-            swatches.push(new Swatch(updateHue, s, l));
         }
     }
 }
@@ -168,7 +157,8 @@ function splitComp() {
     // 2 [intial hue + (180 + offset)] 
     // 3 [intial hue + (180 - offset)]
     const hueOffset = 30;
-    let hues = [];
+    let hues = swatches.map(sw => sw.hue);
+
 
     switch(swatches.length){
         case 0:
@@ -182,8 +172,6 @@ function splitComp() {
                     updateHue = (h + (180 - hueOffset)) % 360;
                 }
                 swatches.push(new Swatch(updateHue, s, l));
-                console.log(swatches[i].hue)
-
             }
             break;
         // 33/33/33 to make next hue +200 OR +180 OR hue +0.
@@ -209,40 +197,28 @@ function splitComp() {
             if(duplicateHue){
                 updateHue = ((swatches[0].hue + 180) + hueOffset) % 360;
             }
-        
             swatches.push(new Swatch(updateHue, s, l));
             console.log(swatches)
             break;
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-            const randomIndex = Math.floor(Math.random() * 3);
-            const randomSwatch = swatches[randomIndex];
-            hues = [];
-            for(let i = 0; i < 3; i++){
-                hues.push(swatches[i].hue);
-            }
-
-            console.log(hues);
-
-            let checkUnique = new Set(hues);
-
-            if(checkUnique.size === 3){
-                swatches.push(new Swatch(randomSwatch.hue, 
-                Math.random() * ((randomSwatch.sat + 0.1) - (randomSwatch.sat - 0.1)) + (randomSwatch.sat - 0.1),
-                Math.random() * ((randomSwatch.light + 0.1) - (randomSwatch.light - 0.1)) + (randomSwatch.light - 0.1)
-            ))
+        default: {
+            let uniqueHues = new Set(hues);
+            if(uniqueHues.size === 3){
+                const randomSwatch = swatches[Math.floor(Math.random() * 3)];
+                swatches.push(new Swatch(randomSwatch.hue, s, l));
             }
             else {
+                const baseHue = hues[0];
+                const firstComp = (baseHue + 180 + hueOffset) % 360;
+                const secondComp = (baseHue + 180 - hueOffset) % 360;
 
+                if(!hues.includes(firstComp)){
+                    swatches.push(new Swatch(firstComp, s, l));         
+                }
+                else{
+                    swatches.push(new Swatch(secondComp, s, l)); 
+                }
             }
             break;    
+        }   
     }
 }
