@@ -1,16 +1,21 @@
 const palette = document.getElementById("palette");
 const patterns = ['Analogous', 'Complementary', 'Monochromatic', 'Split-comp', 'Triadic', 'Tetradic'];
 const savePalette = document.getElementById("saveBtn");
-const paletteSelect = document.getElementById("openBtn");
+const paletteSelect = document.getElementById("paletteSelect");
 let swatches = [];
 let patternIndex = 0;
 let currentPattern = document.getElementById("current-pattern");
 let pattern = document.getElementById("pattern");
 currentPattern.innerHTML = patterns[patternIndex];
-pattern.innerHTML = currentPattern.innerHTML;
+pattern.innerHTML = patterns[patternIndex];
+populateSavedPalettes();
 
 savePalette.addEventListener("click", function () {
-    let saveSwatches = JSON.stringify(swatches);
+    let paletteSave = {
+        pattern: currentPattern.innerHTML,
+        colors: swatches
+    };
+    let saveSwatches = JSON.stringify(paletteSave);
     let paletteName = prompt("Please enter palette name");
     if(paletteName == null || paletteName == ""){
         alert("Palette must have a name");
@@ -21,32 +26,34 @@ savePalette.addEventListener("click", function () {
     else{
         let opt = document.createElement("option")
         opt.innerHTML = paletteName
+        opt.value = "palette_" + paletteName;
         localStorage.setItem("palette_" + paletteName, saveSwatches);
         paletteSelect.add(opt);
     }
 })
 
-paletteSelect.addEventListener("click", function () {
-    let selectedPalette = paletteSelect.options[paletteSelect.selectedIndex].text;
-    swatches = localStorage.getItem("palette_" + selectedPalette);
-    console.log(localStorage.getItem("palette_" + selectedPalette));
+paletteSelect.addEventListener("change", function () {
+    let selectedPalette = this.value;
+
+    if(!selectedPalette || selectedPalette === ""){
+        return;
+    }
+    let savedPalette = localStorage.getItem(selectedPalette);
+    let loadedPalette = JSON.parse(savedPalette);
+
+    currentPattern.innerHTML = loadedPalette.pattern;
+    pattern.innerHTML = loadedPalette.pattern;
+    palette.innerHTML = "";
+    swatches = [];
+
+    palette.innerHTML = "";
+    swatches = [];
+
+    for(const swatch of Object.keys(loadedPalette)){
+        swatches.push(new Swatch(swatch.hue, swatch.sat, swatch.light))
+    }
+
 })
-
-
-
-
-
-/*
-
-const savedPattern = localStorage.getItem("pattern");
-if(savedPattern && patterns.includes(savedPattern)){
-    currentPattern.innerHTML = savedPattern;
-    pattern.innerHTML = currentPattern.textContent;
-    patternIndex = patterns.indexOf(savedPattern);
-}
-
-*/
-
 
 // Pattern switcher carousel logic
 const leftBtn = document.getElementById("left");
@@ -127,6 +134,23 @@ function generatePattern(pattern){
             break;
     }
 }
+
+
+
+function populateSavedPalettes(){
+    const keys = Object.keys(localStorage);
+    for(let i = 0; i < keys.length; i++){
+        const key = keys[i];
+        if(key.startsWith("palette_")){
+            const userPalette = key.replace("palette_", "");
+            let opt = document.createElement("option");
+            opt.innerHTML = userPalette;
+            opt.value = key;
+            paletteSelect.add(opt);
+        }
+    }
+}
+console.log(Object.keys.length);
 
 function openNav() {
   document.getElementById("mySidepanel").style.width = "22vw";
