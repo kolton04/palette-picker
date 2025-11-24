@@ -11,9 +11,15 @@ pattern.innerHTML = patterns[patternIndex];
 populateSavedPalettes();
 
 savePalette.addEventListener("click", function () {
+    const swatchData = swatches.map(swatch => ({
+        hue: swatch.hue,
+        sat: swatch.sat,
+        light: swatch.light
+    }));
+
     let paletteSave = {
         pattern: currentPattern.innerHTML,
-        colors: swatches
+        colors: swatchData
     };
     let saveSwatches = JSON.stringify(paletteSave);
     let paletteName = prompt("Please enter palette name");
@@ -46,14 +52,20 @@ paletteSelect.addEventListener("change", function () {
     palette.innerHTML = "";
     swatches = [];
 
-    palette.innerHTML = "";
-    swatches = [];
-
-    for(const swatch of Object.keys(loadedPalette)){
-        swatches.push(new Swatch(swatch.hue, swatch.sat, swatch.light))
+    
+    for(let i = 0; i < loadedPalette.colors.length; i++){
+        let h = loadedPalette.colors[i].hue;
+        let s = loadedPalette.colors[i].sat;
+        let l = loadedPalette.colors[i].light;
+        if(i < 1){
+            hueSlider.value = h;
+            satSlider.value = s * 100;
+            lightSlider.value = l * 100;
+        }
+        swatches.push(new Swatch(h, s, l))
     }
-
 })
+    
 
 // Pattern switcher carousel logic
 const leftBtn = document.getElementById("left");
@@ -150,7 +162,6 @@ function populateSavedPalettes(){
         }
     }
 }
-console.log(Object.keys.length);
 
 function openNav() {
   document.getElementById("mySidepanel").style.width = "22vw";
