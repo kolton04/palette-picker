@@ -1,0 +1,166 @@
+
+#header {
+    text-align: left center;
+    font-size: 4vw;
+    font-family: "Roboto";
+    line-height: 0%;
+
+}
+
+.pattern-switcher{
+    display: grid;
+    grid-template-columns: auto auto auto ;
+}
+
+#current-pattern{
+    width: 11vw;
+    text-align: center;
+    font-size: 1.3vw;
+    background-color: rgb(117, 114, 114);
+    
+
+}
+
+.btn {
+  height: 3vw;
+  font-family: "Roboto";
+  font-weight: bold;
+  font-size: 2vw;
+}
+
+.slidecontainer {
+  width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 11vw; /* Full-width */
+  height: 50px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 50px; /* Slider handle height */
+  background: #04AA6D; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #04AA6D; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+
+/* The sidepanel menu */
+.sidepanel {
+  width: 0; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top */
+  left: 0;
+  background-color: #111; /* Black*/
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 60px; /* Place content 60px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
+  justify-items: center;
+  overflow-y: auto;
+  max-height: 65vh;
+}
+
+/* The sidepanel links */
+.sidepanel a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidepanel a:hover {
+  color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidepanel .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* Style the button that is used to open the sidepanel */
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+}
+
+.openbtn:hover {
+  background-color: #444;
+}
+
+
+.palette {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto auto;
+    justify-content: center;
+    align-items: center;
+    column-gap: 32px;
+    row-gap: 32px;
+    
+}
+
+#pattern {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 10px;
+  font-size: 4em;
+  border-style: solid;
+  margin: auto;
+  margin-bottom: 20px;
+  width: 450px;
+  background-color: rgb(100, 80, 74);
+
+}
+
+.swatch {
+    position: relative;
+    height: 22vh;
+    width: 30vw;
+    border-radius: 25px;
+    align-self: center;
+}
+
+#hex-label{
+    position:relative;
+    top: 100px;
+    left: 100px;
+}
+
+body {
+    background-color: rgb(73, 63, 63);
+}

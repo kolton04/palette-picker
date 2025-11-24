@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palette Picker</title>
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/chroma-js@2.4.2/chroma.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+    
+</head>
+<body>
+    <div>
+    <h1 id="header">Palette Picker</h1>
+
+    <div id="mySidepanel" class="sidepanel">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+        <a><button id="saveBtn">Save Palette</button></a>
+        <a><div id="openLabel">Open Palette</div>
+        <select id="openBtn"></select></a>
+
+        <a><div class="pattern-switcher">
+        <button type="button" class="btn" id="left"> <</button>
+        <button id="current-pattern"></button>
+        <button type="button" class="btn" id="right"> > </button>
+        </div></a>
+
+        <a><div class="slidecontainer">
+        <input type="range" min="1" max="360" class="slider" id="hueSlider">
+        <p>Value: <span id="test"></span></p>
+        </div></a>
+
+        
+        <a><div class="slidecontainer">
+        <input type="range" min="15" max="100" class="slider" id="satSlider">
+        </div></a>
+
+        
+        <a><div class="slidecontainer">
+        <input type="range" min="30" max="85" class="slider" id="lightSlider">
+        </div></a>
+    </div>
+
+    <button class="openbtn" onclick="openNav()">></button>
+
+    <div id="pattern"></div>
+    <div class="palette" id="palette"></div>
+        
+    </div>
+    <script src="patterns.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
